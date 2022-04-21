@@ -39,7 +39,7 @@ class Wallet(models.Model):
 
 @property
 def token(self):
-    token = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='ES512')
+    token = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='HS512')
     return token
 
 
