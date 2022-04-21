@@ -18,31 +18,32 @@ class User(models.Model):
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     def __str__(self):
         return self.username
 
+
 class Currency(models.Model):
-    name = models.CharField(max_length=100) 
-    symbol = models.CharField(max_length=10) # (AED,GBP,JPY,EUR,CAD,AUD)
-    
+    name = models.CharField(max_length=100)
+    symbol = models.CharField(max_length=10)  # (AED,GBP,JPY,EUR,CAD,AUD)
+
     def __str__(self):
-        return self.symbol    
-    
+        return self.symbol
+
+
 class Wallet(models.Model):
     username_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    currency_id = models.ManyToManyField(Currency) 
-    amount = models.FloatField() 
-    
+    currency_id = models.ManyToManyField(Currency)
+    amount = models.FloatField()
+
     def __str__(self):
-        return f"{self.username_id.first_name} has {self.amount}"  
+        return f"{self.username_id.first_name} has {self.amount}"
+
 
 @property
 def token(self):
-    token = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='HS512')
-    return token
-
-
+    tk = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='HS512')
+    return tk
 
 # class BaseQuoteSymbol(models.Model):
 #     # (British Pound/Japanese Yen)
@@ -58,7 +59,7 @@ def token(self):
 #     name = models.CharField(max_length=100)
 #     # (Currency.id) 
 #     currency_id = models.ManyToManyField(Currency) 
-    
+
 #     def __str__(self):
 #         return self.name      
 
@@ -71,6 +72,6 @@ def token(self):
 #     base_quote_symbol_id = models.ForeignKey(BaseQuoteSymbol, on_delete=models.CASCADE)
 #     # (0.92708) 
 #     current_rate = models.FloatField()
-    
+
 #     def __str__(self):
 #         return self.base_quote_symbol_id.pair
