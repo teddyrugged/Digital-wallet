@@ -2,10 +2,9 @@
 
 ### For Context
 
-There are two projects to be built and you are expected to choose a project based on your POD. These projects are:
+The projects is:
 
-1. Digital Wallet System (eWallet) --> (POD A)
-2. Online Banking System (weBank) --> (POD B)
+Digital Wallet System (eWallet) --> (POD A)
 
 A project description, features to implement and approach to follow are in `POD_A.md` and `POD_B.md` file respectively at the root of this project.
 
