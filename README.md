@@ -18,3 +18,4 @@ Project Specification/Instructions
 6. The system would only be accessible to authenticated users.
 7. There are three user types: Noob, Elite and Admin.
 
+Note: Dependencies are found in the Requirements.txt file.
