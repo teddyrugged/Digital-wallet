@@ -1,14 +1,21 @@
-## Building A Service Oriented Web Applications
+## Building A Service Oriented Web Application - Digital Wallet System (eWallet) --> (POD A)
 
 ### For Context
 
-There are two projects to be built and you are expected to choose a project based on your POD. These projects are:
+The projects is:
 
-1. Digital Wallet System (eWallet) --> (POD A)
-2. Online Banking System (weBank) --> (POD B)
+Digital Wallet System (eWallet)
 
-A project description, features to implement and approach to follow are in `POD_A.md` and `POD_B.md` file respectively at the root of this project.
+Project Overview<br>
+eWallet is a type of pre-paid account in which a user can store his/her money for any future online transaction. With the help of an E-wallet, one can make payments for groceries, online purchases, and flight tickets, among others.
 
-At this point you are expect to checkout `POD_A.md` or `POD_B.md` file depending on your POD.
+Project Specification/Instructions
+1. This Project was done using Python as the base programming language.
+2. Django REST Framework was used as the Server side Framework/API protocol for this project.
+3. The Linting Library is Flake8.
+4. The style Guide is PEP8.
+5. The project centers on designing a wallet system for a product used in multiple countries.
+6. The system would only be accessible to authenticated users.
+7. There are three user types: Noob, Elite and Admin.
 
-Happy Hacking ...
+Note: Dependencies are found in the Requirements.txt file.
