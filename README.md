@@ -11,7 +11,10 @@ eWallet is a type of pre-paid account in which a user can store his/her money fo
 
 Project Specification/Instructions
 1. This Project was done using Python as the base programming language.
-2. Django REST Framework was used as the API protocol for this project.
-3. The project centers on designing a wallet system for a product used in multiple countries.
-4. The system would only be accessible to authenticated users.
+2. Django REST Framework was used as the Server side Framework/API protocol for this project.
+3. The Linting Library is Flake8.
+4. The style Guide is PEP8.
+5. The project centers on designing a wallet system for a product used in multiple countries.
+6. The system would only be accessible to authenticated users.
+7. There are three user types: Noob, Elite and Admin.
 
