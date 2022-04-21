@@ -1,10 +1,10 @@
-## Building A Service Oriented Web Applications
+## Building A Service Oriented Web Application - Digital Wallet System (eWallet) --> (POD A)
 
 ### For Context
 
 The projects is:
 
-Digital Wallet System (eWallet) --> (POD A)
+Digital Wallet System (eWallet)
 
 Project Overview<br>
 eWallet is a type of pre-paid account in which a user can store his/her money for any future online transaction. With the help of an E-wallet, one can make payments for groceries, online purchases, and flight tickets, among others.
