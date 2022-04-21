@@ -1,5 +1,9 @@
-from django.db import models
+from datetime import datetime, timedelta
+
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import models
+import jwt
 
 
 class User(models.Model):
@@ -8,6 +12,7 @@ class User(models.Model):
     username = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=200)
+    otp = models.IntegerField(default=0, blank=True, null=True)
     is_noob = models.BooleanField(default=True)
     is_elite = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -31,6 +36,11 @@ class Wallet(models.Model):
     
     def __str__(self):
         return f"{self.username_id.first_name} has {self.amount}"  
+
+@property
+def token(self):
+    token = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='ES512')
+    return token
 
 
 
