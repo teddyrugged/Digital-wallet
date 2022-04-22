@@ -1,4 +1,11 @@
+
+from datetime import datetime, timedelta
+
+from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
+import jwt
+
 
 
 class User(models.Model):
@@ -8,6 +15,8 @@ class User(models.Model):
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=200)
     otp = models.IntegerField(default=0, blank=True, null=True)
+
+    is_active = models.BooleanField(default=False)
     is_noob = models.BooleanField(default=True)
     is_elite = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -25,6 +34,12 @@ class User(models.Model):
             user_role = None   
                     
         return f"{self.first_name} {self.last_name} (Role={user_role})"
+
+
+    @property
+    def token(self):
+        tk = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='HS512')
+        return tk
 
 
 class Currency(models.Model):
@@ -61,7 +76,7 @@ class Wallet(models.Model):
 #     name = models.CharField(max_length=100)
 #     # (Currency.id) 
 #     currency_id = models.ManyToManyField(Currency) 
-    
+
 #     def __str__(self):
 #         return self.name      
 
@@ -74,6 +89,6 @@ class Wallet(models.Model):
 #     base_quote_symbol_id = models.ForeignKey(BaseQuoteSymbol, on_delete=models.CASCADE)
 #     # (0.92708) 
 #     current_rate = models.FloatField()
-    
+
 #     def __str__(self):
 #         return self.base_quote_symbol_id.pair
