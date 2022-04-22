@@ -13,6 +13,7 @@ class User(models.Model):
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=200)
     otp = models.IntegerField(default=0, blank=True, null=True)
+    is_active = models.BooleanField(default=False)
     is_noob = models.BooleanField(default=True)
     is_elite = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
@@ -21,6 +22,11 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
+
+    @property
+    def token(self):
+        tk = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='HS512')
+        return tk
 
 
 class Currency(models.Model):
@@ -40,10 +46,7 @@ class Wallet(models.Model):
         return f"{self.username_id.first_name} has {self.amount}"
 
 
-@property
-def token(self):
-    tk = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='HS512')
-    return tk
+
 
 # class BaseQuoteSymbol(models.Model):
 #     # (British Pound/Japanese Yen)
