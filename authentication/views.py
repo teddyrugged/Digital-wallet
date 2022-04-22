@@ -57,3 +57,10 @@ class VerifyEmailApiView(generics.GenericAPIView):
             return Response({'error': f'Link is expired: {err}'}, status=status.HTTP_417_EXPECTATION_FAILED)
         except jwt.exceptions.DecodeError as err:
             return Response({'error': f'Invalid Token: {err}'}, status=status.HTTP_417_EXPECTATION_FAILED)
+
+
+class UpdateCurrenciesApiView(generics.GenericAPIView):
+    authentication_classes = []
+
+    def get(self, request):
+        return Response({'message': 'Currencies Updated'}, status=status.HTTP_200_OK)
