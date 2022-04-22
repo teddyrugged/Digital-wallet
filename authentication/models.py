@@ -1,9 +1,11 @@
+
 from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 import jwt
+
 
 
 class User(models.Model):
@@ -13,6 +15,7 @@ class User(models.Model):
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=200)
     otp = models.IntegerField(default=0, blank=True, null=True)
+
     is_active = models.BooleanField(default=False)
     is_noob = models.BooleanField(default=True)
     is_elite = models.BooleanField(default=False)
@@ -21,7 +24,17 @@ class User(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.username
+        if self.is_noob:
+            user_role = "Noob"
+        elif self.is_elite:
+            user_role = "Elite"
+        elif self.is_admin:
+            user_role = "Admin"
+        else:
+            user_role = None   
+                    
+        return f"{self.first_name} {self.last_name} (Role={user_role})"
+
 
     @property
     def token(self):
@@ -31,20 +44,21 @@ class User(models.Model):
 
 class Currency(models.Model):
     name = models.CharField(max_length=100)
-    symbol = models.CharField(max_length=10)  # (AED,GBP,JPY,EUR,CAD,AUD)
+    symbol = models.CharField(max_length=10)  
+    # (AED,GBP,JPY,EUR,CAD,AUD)
 
     def __str__(self):
-        return self.symbol
+        return f"{self.name} - {self.symbol}" 
 
 
 class Wallet(models.Model):
+    name = models.CharField(max_length=100)
     username_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    currency_id = models.ManyToManyField(Currency)
-    amount = models.FloatField()
+    currency_id = models.ForeignKey(Currency, on_delete=models.CASCADE)
+    amount = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.username_id.first_name} has {self.amount}"
-
+        return f"{self.currency_id.name} WALLET for {self.username_id.first_name} {self.username_id.last_name} | Amount = {self.amount} {self.currency_id.symbol}" 
 
 
 
