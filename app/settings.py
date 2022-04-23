@@ -142,13 +142,12 @@ REST_FRAMEWORK = {
 #         'rest_framework.permissions.IsAuthenticated',
 #         # 'rest_framework.permissions.AllowAny',
 #     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.BasicAuthentication',
-#         # 'rest_framework.authentication.SessionAuthentication',
-#     ]
-
-    'DEFAULT_AUTHENTICATION_CLASSES': ['authentication.jwt_auth.JWTAuthentication']
-
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'authentication.jwt_auth.JWTAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
 }
 
 DATA_API = os.environ.get('DATA_API')

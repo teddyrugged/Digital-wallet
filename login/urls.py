@@ -1,5 +1,6 @@
 from django.urls import include, path
 from .views import (UserListCreateAPIView,UserRetrieveUpdateDestroyAPIView,CurrencyListCreateAPIView,CurrencyRetrieveUpdateDestroyAPIView, WalletListCreateAPIView,WalletRetrieveUpdateDestroyAPIView)
+from rest_framework_simplejwt.views import (TokenObtainPairView,TokenRefreshView)
 
 urlpatterns = [
     #User
@@ -14,7 +15,13 @@ urlpatterns = [
     path('wallet/', WalletListCreateAPIView.as_view(), name='wallet-list'),
     path('wallet/<int:pk>/', WalletRetrieveUpdateDestroyAPIView.as_view(), name='wallet-detail'),
     
-    #RestFramework login/logout option
-    path('api-auth', include('rest_framework.urls'))
+    #RestFramework interface login/logout option
+    path('api-auth', include('rest_framework.urls')),
+    
+    #JWT Login
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    
     
     ]
