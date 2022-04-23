@@ -10,7 +10,8 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = "__all__"
+        exclude = ['password','last_login','date_joined','otp','created_at','updated_at', 'groups', 'user_permissions']
+        # fields = "__all__"
         # exclude = ('watchlist',)
         
         
