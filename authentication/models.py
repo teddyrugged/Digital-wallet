@@ -61,7 +61,6 @@ class Wallet(models.Model):
         return f"{self.currency_id.name} WALLET for {self.username_id.first_name} {self.username_id.last_name} | Amount = {self.amount} {self.currency_id.symbol}" 
 
 
-
 # class BaseQuoteSymbol(models.Model):
 #     # (British Pound/Japanese Yen)
 #     name = models.CharField(max_length=100)

@@ -151,6 +151,7 @@ REST_FRAMEWORK = {
 }
 
 DATA_API = os.environ.get('DATA_API')
+DATA_URL = "http://data.fixer.io/api/"
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'

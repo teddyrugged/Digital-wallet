@@ -1,12 +1,15 @@
+import json
+
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import reverse
 import jwt
+import requests
 from rest_framework import generics, status
 from rest_framework.response import Response
 
 from authentication.serializers import RegisterSerializer
-from authentication.models import User
+from authentication.models import User, Currency
 from .utils import Utils
 
 
@@ -63,4 +66,21 @@ class UpdateCurrenciesApiView(generics.GenericAPIView):
     authentication_classes = []
 
     def get(self, request):
-        return Response({'message': 'Currencies Updated'}, status=status.HTTP_200_OK)
+        try:
+            url = f'{settings.DATA_URL}symbols?access_key={settings.DATA_API}'
+            print(url)
+            r = requests.get(url)
+            if r.status_code == 200:
+                results = json.loads(r.content)
+                # To remove existing currencies
+                Currency.objects.all().delete()
+
+                for cur in results['symbols']:
+                    # To save each symbol and currency inside the database
+                    Currency.objects.create(name=results['symbols'][cur], symbol=cur).save()
+                return Response({'message': 'Currencies Updated', 'data': results['symbols']}, status=status.HTTP_200_OK)
+            return Response({'message': 'Invalid Response'}, status=status.HTTP_400_BAD_REQUEST)
+        except ConnectionError:
+            return Response({'message': 'Website is not Available'}, status=status.HTTP_404_NOT_FOUND)
+        except requests.exceptions.ConnectionError:
+            return Response({'message': "Connection Error. -> Invalid URL"}, status=status.HTTP_404_NOT_FOUND)
