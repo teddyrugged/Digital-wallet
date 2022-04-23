@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 
 from django.conf import settings
@@ -6,6 +5,15 @@ from django.contrib.auth.models import User
 from django.db import models
 import jwt
 
+
+class Currency(models.Model):
+    name = models.CharField(max_length=100)
+    symbol = models.CharField(max_length=10)
+
+    # (AED,GBP,JPY,EUR,CAD,AUD)
+
+    def __str__(self):
+        return f"{self.name} - {self.symbol}"
 
 
 class User(models.Model):
@@ -15,6 +23,7 @@ class User(models.Model):
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=200)
     otp = models.IntegerField(default=0, blank=True, null=True)
+    main_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=True)
 
     is_active = models.BooleanField(default=False)
     is_noob = models.BooleanField(default=True)
@@ -31,24 +40,14 @@ class User(models.Model):
         elif self.is_admin:
             user_role = "Admin"
         else:
-            user_role = None   
-                    
-        return f"{self.first_name} {self.last_name} (Role={user_role})"
+            user_role = None
 
+        return f"{self.first_name} {self.last_name} (Role={user_role})"
 
     @property
     def token(self):
         tk = jwt.encode({'user': self.username, 'email': self.email, 'exp': datetime.utcnow() + timedelta(hours=24)}, settings.SECRET_KEY, algorithm='HS512')
         return tk
-
-
-class Currency(models.Model):
-    name = models.CharField(max_length=100)
-    symbol = models.CharField(max_length=10)  
-    # (AED,GBP,JPY,EUR,CAD,AUD)
-
-    def __str__(self):
-        return f"{self.name} - {self.symbol}" 
 
 
 class Wallet(models.Model):
@@ -58,10 +57,9 @@ class Wallet(models.Model):
     amount = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.currency_id.name} WALLET for {self.username_id.first_name} {self.username_id.last_name} | Amount = {self.amount} {self.currency_id.symbol}" 
+        return f"{self.currency_id.name} WALLET for {self.username_id.first_name} {self.username_id.last_name} | Amount = {self.amount} {self.currency_id.symbol}"
 
-
-# class BaseQuoteSymbol(models.Model):
+    # class BaseQuoteSymbol(models.Model):
 #     # (British Pound/Japanese Yen)
 #     name = models.CharField(max_length=100)
 #     # (GBP/JPY) 
