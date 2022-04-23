@@ -3,7 +3,8 @@ from authentication.models import (User, Currency, Wallet)
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
 from .serializers import (UserSerializer,CurrencySerializer,WalletSerializer)
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.permissions import (IsAdminUser, IsAuthenticated, IsAuthenticatedOrReadOnly)
+from rest_framework.permissions import (IsAdminUser, IsAuthenticated)
+from .permissions import (AdminOrAuthenticatedReadOnly)
 
 ##########################
 '''User Views'''
@@ -30,14 +31,14 @@ class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class CurrencyListCreateAPIView(ListCreateAPIView):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
-    permission_classes = [IsAuthenticated]  
+    permission_classes = [IsAdminUser]  
     # authentication_classes = [SessionAuthentication,TokenAuthentication]
     # permission_classes = [AllowAny,IsAuthenticated,IsAdminUser]  
 
 class CurrencyRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsAdminUser] 
     # authentication_classes = [SessionAuthentication,TokenAuthentication]
     # permission_classes = [AllowAny,IsAuthenticated,IsAdminUser]    
     
