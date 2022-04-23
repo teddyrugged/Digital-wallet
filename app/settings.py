@@ -138,19 +138,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
 
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-        # 'rest_framework.permissions.AllowAny',
-    ],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.TokenAuthentication',
-    ]
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#         # 'rest_framework.permissions.AllowAny',
+#     ],
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.BasicAuthentication',
+#         # 'rest_framework.authentication.SessionAuthentication',
+#     ]
 
-    # 'DEFAULT_AUTHENTICATION_CLASSES': ['authentication.jwt_auth.JWTAuthentication']
+    'DEFAULT_AUTHENTICATION_CLASSES': ['authentication.jwt_auth.JWTAuthentication']
+
 }
 
 DATA_API = os.environ.get('DATA_API')
+DATA_URL = "http://data.fixer.io/api/"
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
