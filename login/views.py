@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from authentication.models import (User, Currency, Wallet)
 from rest_framework.generics import (ListCreateAPIView, RetrieveUpdateDestroyAPIView)
-
 from .serializers import (UserSerializer,CurrencySerializer,WalletSerializer)
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import (IsAdminUser, IsAuthenticated)
