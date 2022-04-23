@@ -138,17 +138,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
 
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#         # 'rest_framework.permissions.AllowAny',
-#     ],
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.BasicAuthentication',
-#         # 'rest_framework.authentication.SessionAuthentication',
-#     ]
-# }
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+        # 'rest_framework.permissions.AllowAny',
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ]
 
-    'DEFAULT_AUTHENTICATION_CLASSES': ['authentication.jwt_auth.JWTAuthentication']
+    # 'DEFAULT_AUTHENTICATION_CLASSES': ['authentication.jwt_auth.JWTAuthentication']
 }
 
 DATA_API = os.environ.get('DATA_API')
@@ -160,4 +159,4 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
-# AUTH_USER_MODEL = 'authentication.User'
+AUTH_USER_MODEL = 'authentication.User'

@@ -12,13 +12,13 @@ from rest_framework.permissions import IsAuthenticated
 class UserListCreateAPIView(ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
-    # permission_classes = [IsAuthenticated]
+    # authentication_classes = [SessionAuthentication,TokenAuthentication]
+    # permission_classes = [IsAuthenticated]   
 
 class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # authentication_classes = [SessionAuthentication,TokenAuthentication]
     # permission_classes = [IsAuthenticated]   
 
 ##########################
@@ -28,13 +28,13 @@ class UserRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class CurrencyListCreateAPIView(ListCreateAPIView):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # authentication_classes = [SessionAuthentication,TokenAuthentication]
     # permission_classes = [IsAuthenticated]
 
 class CurrencyRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Currency.objects.all()
     serializer_class = CurrencySerializer
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # authentication_classes = [SessionAuthentication,TokenAuthentication]
     # permission_classes = [IsAuthenticated]  
     
 ##########################
@@ -44,11 +44,11 @@ class CurrencyRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class WalletListCreateAPIView(ListCreateAPIView):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer 
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # authentication_classes = [SessionAuthentication,TokenAuthentication]
     # permission_classes = [IsAuthenticated]   
 
 class WalletRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
-    # authentication_classes = [SessionAuthentication, BasicAuthentication]
+    # authentication_classes = [SessionAuthentication,TokenAuthentication]
     # permission_classes = [IsAuthenticated]  
