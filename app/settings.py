@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     # Apps
     'authentication.apps.AuthenticationConfig',
     'login.apps.LoginConfig',
+    'wallet.apps.WalletConfig',
 
     # PIP INSTALLS
     'rest_framework',
