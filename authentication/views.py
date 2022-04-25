@@ -1,19 +1,55 @@
 import json
 
 from django.conf import settings
+from django.contrib.auth import logout, login
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import reverse
 import jwt
 import requests
-from rest_framework import generics, status
+from rest_framework import generics, status, exceptions
 from rest_framework.response import Response
 
-from authentication.serializers import RegisterSerializer
+from authentication.serializers import RegisterSerializer, LoginSerializer
 from authentication.models import User, Currency
 from .utils import Utils
 
 
-# Create your views here.
+class LogoutApiView(generics.GenericAPIView):
+    def get(self, request):
+        logout(request)
+        if 'jwt' in request.COOKIES:
+            del request.COOKIES['jwt']
+        return Response({'message': 'Logged Out'}, status=status.HTTP_200_OK)
+
+
+class LoginApiView(generics.GenericAPIView):
+    authentication_classes = []
+    serializer_class = LoginSerializer
+
+    def post(self, request):
+        if not request.data.get('username'):
+            raise exceptions.NotAcceptable('Username is missing')
+        if not request.data['password']:
+            raise exceptions.NotAcceptable('Password is missing')
+
+        username = request.data['username']
+        password = request.data['password']
+
+        # user = authenticate(username=username, password=password)
+        # print('User is: ', user)
+        # if user:
+        #     serializer = self.serializer_class(user)
+        try:
+            user = User.objects.get(username=username)
+            login(request, user)
+            serializer = self.serializer_class(user)
+            resp = Response(serializer.data, status=status.HTTP_200_OK)
+            resp.set_cookie(key='jwt', value=serializer.data['token'], httponly=True)
+            return resp
+        except User.DoesNotExist:
+            return Response('Invalid User', status=status.HTTP_404_NOT_FOUND)
+
+
 class RegisterApiView(generics.GenericAPIView):
     # Prevents authentication on this page
     authentication_classes = []

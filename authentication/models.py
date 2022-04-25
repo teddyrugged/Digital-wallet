@@ -9,21 +9,14 @@ class Currency(models.Model):
     name = models.CharField(max_length=100)
     symbol = models.CharField(max_length=10)
 
-    # (AED,GBP,JPY,EUR,CAD,AUD)
-
     def __str__(self):
         return f"{self.name} - {self.symbol}"
 
 
 class User(AbstractUser):
-    # first_name = models.CharField(max_length=100)
-    # last_name = models.CharField(max_length=100)
-    # username = models.CharField(max_length=100)
-    # email = models.EmailField(max_length=100)
-    # password = models.CharField(max_length=200)
     otp = models.IntegerField(default=0, blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    main_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=True)
+    is_active = models.BooleanField(default=False)
+    main_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=True, db_constraint=False)
 
     is_noob = models.BooleanField(default=True)
     is_elite = models.BooleanField(default=False)
