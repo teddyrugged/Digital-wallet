@@ -15,7 +15,18 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
         return response.Response(serializer.data, status=status.HTTP_200_OK)
 
     def put(self, request, *args, **kwargs):
-        pass
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            amount = serializer.data['amount']
+            data = Wallet.objects.get(pk=kwargs['pk'])
+
+            if serializer.data['currency_id'] == int(request.data['currency_id']):
+                print('Here oooo')
+                data.amount += amount
+                data.save()
+                return self.get(request, kwargs['pk'])
+            return response.Response(serializer.data)
+        print(request.data)
 
 
 
