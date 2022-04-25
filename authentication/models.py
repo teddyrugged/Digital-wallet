@@ -5,7 +5,6 @@ from django.db import models
 import jwt
 
 
-
 class Currency(models.Model):
     name = models.CharField(max_length=100)
     symbol = models.CharField(max_length=10)
@@ -14,6 +13,7 @@ class Currency(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.symbol}"
+
 
 class User(AbstractUser):
     # first_name = models.CharField(max_length=100)
@@ -43,7 +43,6 @@ class User(AbstractUser):
         else:
             user_role = None
 
-
         return f"{self.first_name} {self.last_name} (Role={user_role})"
 
     @property
@@ -60,5 +59,3 @@ class Wallet(models.Model):
 
     def __str__(self):
         return f"{self.currency_id.name} WALLET for {self.username_id.first_name} {self.username_id.last_name} | Amount = {self.amount} {self.currency_id.symbol}"
-
-
