@@ -1,3 +1,5 @@
+import json
+
 from django.conf import settings
 import requests
 from rest_framework import generics, permissions, response, status
@@ -31,11 +33,20 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
             else:
                 _from = Currency.objects.get(pk=serializer.data['currency_id']).symbol
                 _to = Currency.objects.get(pk=currency_id).symbol
-                url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
+                # url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
+                url = 'http://data.fixer.io/api/latest?access_key=f220f64fc69b58e803aa9a45461dbcda'
 
+                r = Utils.make_request(url)
+                if r.status_code != 200:
+                    return r
+                Utils.fine(r.content)
+                results = json.loads(r.content)
+                # Utils.fine((_from, _to, results))
+                wallet_currency = results['rates'][_to]
+                from_currency = results['rates'][_from]
+                amount = (amount * wallet_currency) / from_currency
 
-                # Amount * Wallet_currency / from_currency
-                return response.Response(url, status=status.HTTP_200_OK)
+                return response.Response({'amount': amount}, status=status.HTTP_200_OK)
             return response.Response(serializer.data)
         print(request.data)
 

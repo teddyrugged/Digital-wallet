@@ -3,6 +3,7 @@ from django.conf import settings
 import requests
 from rest_framework import response, status
 
+
 class Utils:
     @staticmethod
     def send_email(data):
@@ -14,10 +15,14 @@ class Utils:
     @staticmethod
     def make_request(url):
         try:
-            url = f'{settings.DATA_URL}symbols?access_key={settings.DATA_API}'
             r = requests.get(url)
             return r
         except ConnectionError:
             return response.Response({'message': 'Website is not Available'}, status=status.HTTP_404_NOT_FOUND)
         except requests.exceptions.ConnectionError:
             return response.Response({'message': "Connection Error. -> Invalid URL"}, status=status.HTTP_404_NOT_FOUND)
+
+    @staticmethod
+    def fine(obj):
+        from pprint import pprint
+        pprint(obj)
