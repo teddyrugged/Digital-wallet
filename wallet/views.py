@@ -1,8 +1,10 @@
 from django.conf import settings
+import requests
 from rest_framework import generics, permissions, response, status
 
 from . import serializers
 from .models import Wallet, Currency
+from authentication.utils import Utils
 
 
 class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
@@ -29,7 +31,10 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
             else:
                 _from = Currency.objects.get(pk=serializer.data['currency_id']).symbol
                 _to = Currency.objects.get(pk=currency_id).symbol
-                url = f'{settings.DATA_URL}convert?access_key={settings.DATA_API}&from={_from}&to={_to}&amount={amount}'
+                url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
+
+
+                # Amount * Wallet_currency / from_currency
                 return response.Response(url, status=status.HTTP_200_OK)
             return response.Response(serializer.data)
         print(request.data)

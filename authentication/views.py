@@ -104,7 +104,6 @@ class UpdateCurrenciesApiView(generics.GenericAPIView):
     def get(self, request):
         try:
             url = f'{settings.DATA_URL}symbols?access_key={settings.DATA_API}'
-            print(url)
             r = requests.get(url)
             if r.status_code == 200:
                 results = json.loads(r.content)
