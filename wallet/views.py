@@ -19,12 +19,14 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
         if serializer.is_valid():
             amount = serializer.data['amount']
             data = Wallet.objects.get(pk=kwargs['pk'])
+            currency_id = data.currency_id_id
 
-            if serializer.data['currency_id'] == int(request.data['currency_id']):
-                print('Here oooo')
+            if serializer.data['currency_id'] == currency_id:
                 data.amount += amount
                 data.save()
                 return self.get(request, kwargs['pk'])
+            else:
+                print(request.data['currency_id'], currency_id)
             return response.Response(serializer.data)
         print(request.data)
 
