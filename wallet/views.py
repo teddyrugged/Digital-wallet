@@ -1,7 +1,8 @@
+from django.conf import settings
 from rest_framework import generics, permissions, response, status
 
 from . import serializers
-from .models import Wallet
+from .models import Wallet, Currency
 
 
 class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
@@ -26,10 +27,12 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
                 data.save()
                 return self.get(request, kwargs['pk'])
             else:
-                print(request.data['currency_id'], currency_id)
+                _from = Currency.objects.get(pk=serializer.data['currency_id']).symbol
+                _to = Currency.objects.get(pk=currency_id).symbol
+                url = f'{settings.DATA_URL}convert?access_key={settings.DATA_API}&from={_from}&to={_to}&amount={amount}'
+                return response.Response(url, status=status.HTTP_200_OK)
             return response.Response(serializer.data)
         print(request.data)
-
 
 
 class WalletApiView(generics.ListCreateAPIView):
