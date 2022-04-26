@@ -33,22 +33,28 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
             else:
                 _from = Currency.objects.get(pk=serializer.data['currency_id']).symbol
                 _to = Currency.objects.get(pk=currency_id).symbol
-                # url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
-                url = 'http://data.fixer.io/api/latest?access_key=f220f64fc69b58e803aa9a45461dbcda'
+                url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
 
-                r = Utils.make_request(url)
-                if r.status_code != 200:
-                    return r
-                Utils.fine(r.content)
-                results = json.loads(r.content)
-                # Utils.fine((_from, _to, results))
-                wallet_currency = results['rates'][_to]
-                from_currency = results['rates'][_from]
-                amount = (amount * wallet_currency) / from_currency
+                try:
+                    # Makes request to the api to get rates
+                    r = Utils.make_request(url)
+                    if r.status_code != 200:
+                        return r
+                    results = json.loads(r.content)
 
-                return response.Response({'amount': amount}, status=status.HTTP_200_OK)
-            return response.Response(serializer.data)
-        print(request.data)
+                    wallet_currency = results['rates'][_to]
+                    from_currency = results['rates'][_from]
+
+                    # round converted amount to two decimal places
+                    amount = round((amount * wallet_currency) / from_currency, 2)
+
+                    # update wallet amount
+                    data.amount += amount
+                    data.save()
+                    return self.get(request, kwargs['pk'])
+
+                except Exception as er:
+                    return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class WalletApiView(generics.ListCreateAPIView):
