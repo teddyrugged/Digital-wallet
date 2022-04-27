@@ -14,7 +14,12 @@ class WalletSerializers(serializers.ModelSerializer):
 
 
 class FundWalletSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = Wallet
+        fields = ['amount', 'currency_id']
 
+
+class WithdrawWalletSerializers(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ['amount', 'currency_id']
