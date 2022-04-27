@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     # PIP INSTALLS
     'whitenoise.runserver_nostatic',
     'rest_framework',
-    'drf_yasg'
-    'django_on_heroku'
+    'drf_yasg',
+    'django_on_heroku',
 
 ]
 
