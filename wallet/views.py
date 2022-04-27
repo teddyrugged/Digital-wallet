@@ -61,13 +61,13 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
                         print('selected', selected_currency)
                         if wallets:
                             # Update the existing wallet with the new amount
-                            # wallets.amount += amount
-                            # wallets.save()
-                            print('yes')
+                            wallets[0].amount += amount
+                            wallets[0].save()
+                            return response.Response({'message': f"Your '{wallets[0].name}' has been funded with {amount}"}, status=status.HTTP_202_ACCEPTED)
                         else:
                             # Create a new wallet with the amount and currency
                             cur_instance = Currency.objects.get(pk=selected_currency)
-                            Wallet.objects.create(username_id=request.user, amount=amount, currency_id=cur_instance, name=f'{request.user.first_name} {cur_instance.name}').save()
+                            Wallet.objects.create(username_id=request.user, amount=amount, currency_id=cur_instance, name=f'{request.user.first_name} {cur_instance.name} Wallet').save()
                             return response.Response({'message': 'Wallet Successfully Created', 'wallet': cur_instance.name}, status=status.HTTP_201_CREATED)
                         return self.get(request, kwargs['pk'])
 
