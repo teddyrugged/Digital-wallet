@@ -63,14 +63,14 @@ class RegisterApiView(generics.GenericAPIView):
             token = serializer.data['token']
 
             try:
-                relative_url = reverse('verify-email')
-                data = {
-                    'subject': 'Registration Complete',
-                    'body': f"This is a verification message. Click link to verify your email http://{get_current_site(request).domain}{relative_url}?token={token}",
-                    'receiver': serializer.data['email']
-                }
+                # relative_url = reverse('verify-email')
+                # data = {
+                #     'subject': 'Registration Complete',
+                #     'body': f"This is a verification message. Click link to verify your email http://{get_current_site(request).domain}{relative_url}?token={token}",
+                #     'receiver': serializer.data['email']
+                # }
 
-                Utils.send_email(data)
+                # Utils.send_email(data)
                 return Response({'message': 'Success', 'data': serializer.data}, status=status.HTTP_201_CREATED)
             except Exception as err:
                 return Response({'message': 'Error', 'data': str(err)}, status=status.HTTP_400_BAD_REQUEST)
