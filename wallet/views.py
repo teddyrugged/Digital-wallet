@@ -8,6 +8,7 @@ from rest_framework import generics, permissions, response, status
 from . import serializers
 from .models import Wallet, Currency
 from authentication.utils import Utils
+from . import my_permissions
 
 
 class WithdrawWalletApiView(generics.RetrieveUpdateAPIView):
@@ -89,12 +90,10 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class WalletApiView(generics.ListCreateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [my_permissions.IsElite, permissions.IsAuthenticated]
     serializer_class = serializers.WalletSerializers
     queryset = Wallet.objects.all()
 
-    # def get_serializer_context(self):
-    #     context = super().get_serializer_context()
 
     def get(self, request):
         # Get all wallets associated with the user
