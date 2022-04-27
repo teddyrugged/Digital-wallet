@@ -46,4 +46,5 @@ urlpatterns = [
 
     # APPS URL
     path('api/v1/', include('authentication.urls')),
+    path('api/v1/', include('wallet.urls')),
 ]

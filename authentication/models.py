@@ -5,25 +5,18 @@ from django.db import models
 import jwt
 
 
-
 class Currency(models.Model):
     name = models.CharField(max_length=100)
     symbol = models.CharField(max_length=10)
 
-    # (AED,GBP,JPY,EUR,CAD,AUD)
-
     def __str__(self):
         return f"{self.name} - {self.symbol}"
 
+
 class User(AbstractUser):
-    # first_name = models.CharField(max_length=100)
-    # last_name = models.CharField(max_length=100)
-    # username = models.CharField(max_length=100)
-    # email = models.EmailField(max_length=100)
-    # password = models.CharField(max_length=200)
     otp = models.IntegerField(default=0, blank=True, null=True)
-    is_active = models.BooleanField(default=True)
-    main_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=True)
+    is_active = models.BooleanField(default=False)
+    main_currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=True, db_constraint=False)
 
     is_noob = models.BooleanField(default=True)
     is_elite = models.BooleanField(default=False)
@@ -43,7 +36,6 @@ class User(AbstractUser):
         else:
             user_role = None
 
-
         return f"{self.first_name} {self.last_name} (Role={user_role})"
 
     @property
@@ -60,5 +52,3 @@ class Wallet(models.Model):
 
     def __str__(self):
         return f"{self.currency_id.name} WALLET for {self.username_id.first_name} {self.username_id.last_name} | Amount = {self.amount} {self.currency_id.symbol}"
-
-
