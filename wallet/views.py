@@ -1,5 +1,6 @@
 import json
 
+from django.forms import model_to_dict
 from django.conf import settings
 import requests
 from rest_framework import generics, permissions, response, status
@@ -96,7 +97,12 @@ class WalletApiView(generics.ListCreateAPIView):
     #     context = super().get_serializer_context()
 
     def get(self, request):
-        return response.Response(request.COOKIES)
+        # Get all wallets associated with the user
+        user_wallet = Wallet.objects.filter(username_id=request.user)
+
+        # Convert the models to dictionary for each wallet
+        wallets = [model_to_dict(wallet) for wallet in user_wallet]
+        return response.Response(wallets, status=status.HTTP_200_OK)
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
