@@ -57,15 +57,19 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
                         return self.get(request, kwargs['pk'])
                     else:
                         # Checks if there is an existing wallet for the user with the same currency
-                        wallets = Wallet.objects.filter(username_id=request.user, currency_id=selected_currency)
+                        wallets = Wallet.objects.filter(username_id=request.user, currency_id_id=selected_currency)
+                        print('selected', selected_currency)
                         if wallets:
                             # Update the existing wallet with the new amount
-                            print('Yes')
+                            # wallets.amount += amount
+                            # wallets.save()
+                            print('yes')
                         else:
                             # Create a new wallet with the amount and currency
-                            print('No')
-
-                        return response.Response('Hello')
+                            cur_instance = Currency.objects.get(pk=selected_currency)
+                            Wallet.objects.create(username_id=request.user, amount=amount, currency_id=cur_instance, name=f'{request.user.first_name} {cur_instance.name}').save()
+                            return response.Response({'message': 'Wallet Successfully Created', 'wallet': cur_instance.name}, status=status.HTTP_201_CREATED)
+                        return self.get(request, kwargs['pk'])
 
                 except Exception as er:
                     return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)
