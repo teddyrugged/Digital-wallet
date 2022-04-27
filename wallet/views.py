@@ -25,33 +25,47 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
             amount = serializer.data['amount']
             data = Wallet.objects.get(pk=kwargs['pk'])
             currency_id = data.currency_id_id
+            selected_currency = serializer.data['currency_id']
 
-            if serializer.data['currency_id'] == currency_id:
+            if selected_currency == currency_id:
                 data.amount += amount
                 data.save()
                 return self.get(request, kwargs['pk'])
             else:
-                _from = Currency.objects.get(pk=serializer.data['currency_id']).symbol
+                _from = Currency.objects.get(pk=selected_currency).symbol
                 _to = Currency.objects.get(pk=currency_id).symbol
                 url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
 
                 try:
-                    # Makes request to the api to get rates
-                    r = Utils.make_request(url)
-                    if r.status_code != 200:
-                        return r
-                    results = json.loads(r.content)
+                    if request.user.is_noob:
 
-                    wallet_currency = results['rates'][_to]
-                    from_currency = results['rates'][_from]
+                        # Makes request to the api to get rates
+                        r = Utils.make_request(url)
+                        if r.status_code != 200:
+                            return r
+                        results = json.loads(r.content)
 
-                    # round converted amount to two decimal places
-                    amount = round((amount * wallet_currency) / from_currency, 2)
+                        wallet_currency = results['rates'][_to]
+                        from_currency = results['rates'][_from]
 
-                    # update wallet amount
-                    data.amount += amount
-                    data.save()
-                    return self.get(request, kwargs['pk'])
+                        # round converted amount to two decimal places
+                        amount = round((amount * wallet_currency) / from_currency, 2)
+
+                        # update wallet amount
+                        # data.amount += amount
+                        # data.save()
+                        return self.get(request, kwargs['pk'])
+                    else:
+                        # Checks if there is an existing wallet for the user with the same currency
+                        wallets = Wallet.objects.filter(username_id=request.user, currency_id=selected_currency)
+                        if wallets:
+                            # Update the existing wallet with the new amount
+                            print('Yes')
+                        else:
+                            # Create a new wallet with the amount and currency
+                            print('No')
+
+                        return response.Response('Hello')
 
                 except Exception as er:
                     return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)

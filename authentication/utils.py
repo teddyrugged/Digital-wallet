@@ -23,6 +23,7 @@ class Utils:
             return response.Response({'message': "Connection Error. -> Invalid URL"}, status=status.HTTP_404_NOT_FOUND)
 
     @staticmethod
-    def fine(obj):
+    def fine(*args):
         from pprint import pprint
-        pprint(obj)
+        for obj in args:
+            pprint(obj)
