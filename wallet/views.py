@@ -9,9 +9,20 @@ from .models import Wallet, Currency
 from authentication.utils import Utils
 
 
-class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
+class WithdrawWalletApiView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = serializers.FundWalletSerializers
+    queryset = Wallet.objects.all()
+
+    def put(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            return response.Response({'data': serializer.data, 'user': request.user.username, 'pk': kwargs['pk']}, status=status.HTTP_201_CREATED)
+
+
+class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = serializers.WithdrawWalletSerializers
     queryset = Wallet.objects.all()
 
     def get(self, request, pk):
@@ -52,8 +63,8 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
                         amount = round((amount * wallet_currency) / from_currency, 2)
 
                         # update wallet amount
-                        # data.amount += amount
-                        # data.save()
+                        data.amount += amount
+                        data.save()
                         return self.get(request, kwargs['pk'])
                     else:
                         # Checks if there is an existing wallet for the user with the same currency
@@ -67,7 +78,8 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
                         else:
                             # Create a new wallet with the amount and currency
                             cur_instance = Currency.objects.get(pk=selected_currency)
-                            Wallet.objects.create(username_id=request.user, amount=amount, currency_id=cur_instance, name=f'{request.user.first_name} {cur_instance.name} Wallet').save()
+                            Wallet.objects.create(username_id=request.user, amount=amount, currency_id=cur_instance,
+                                                  name=f'{request.user.first_name} {cur_instance.name} Wallet').save()
                             return response.Response({'message': 'Wallet Successfully Created', 'wallet': cur_instance.name}, status=status.HTTP_201_CREATED)
                         return self.get(request, kwargs['pk'])
 
