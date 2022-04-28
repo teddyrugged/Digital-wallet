@@ -9,7 +9,7 @@ import requests
 from rest_framework import generics, status, exceptions
 from rest_framework.response import Response
 
-from authentication.serializers import RegisterSerializer, LoginSerializer
+from authentication.serializers import RegisterSerializer, LoginSerializer, ValidateOTPSerializer, MyResetPasswordSerializer, SetNewPasswordSerializer
 from authentication.models import User, Currency
 from .utils import Utils
 
@@ -117,3 +117,75 @@ class UpdateCurrenciesApiView(generics.GenericAPIView):
             return Response({'message': 'Website is not Available'}, status=status.HTTP_404_NOT_FOUND)
         except requests.exceptions.ConnectionError:
             return Response({'message': "Connection Error. -> Invalid URL"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ResetPasswordAPIView(GenericAPIView):
+    serializer_class = MyResetPasswordSerializer
+    authentication_classes = []
+
+    def post(self, request):
+        data = {'request': request, 'data': request.data}
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            return Response({'msg': 'Reset Link Sent', 'data': serializer.data}, status=status.HTTP_202_ACCEPTED)
+        return Response({'msg': 'Email not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class ChangePasswordApiView(generics.GenericAPIView):
+    authentication_classes = []
+    serializer_class = ValidateOTPSerializer
+
+    def get(self, request):
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
+            user = User.objects.get(username=payload['username'])
+
+            return Response({'message': 'Token is Valid. Enter OTP to reset your password', 'user': user.username}, status=200)
+        except jwt.ExpiredSignatureError as err:
+            return Response({'message': 'Link is expired', 'err': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as err:
+            return Response({'message': 'Invalid Token', 'err': str(err)}, status=status.HTTP_409_CONFLICT)
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        if serializer.is_valid():
+            otp = int(request.data['otp'])
+            token = request.GET.get('token')
+
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
+            user = User.objects.get(username=payload['username'])
+
+            if user.otp == otp:
+                return Response({'message': 'OTP Accepted', 'link': settings.BASE_URL + reverse('reset-change-password') + f'?token={token}'}, status=status.HTTP_202_ACCEPTED)
+            else:
+                return Response({'message': 'Incorrect OTP'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        return Response({'message': 'Only Numbers allowed'}, status=status.HTTP_409_CONFLICT)
+
+
+class SetNewPassword(generics.GenericAPIView):
+    authentication_classes = []
+    serializer_class = SetNewPasswordSerializer
+
+    def get(self, request):
+        token = request.GET.get('token')
+        return Response({'password': '', 'token': token}, )
+
+    def patch(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        token = request.data['token']
+        password = request.data['password']
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
+            user = User.objects.get(username=payload['username'])
+
+            user.set_password(password)
+            user.save()
+            return Response({'success': True, 'msg': 'Password Reset'}, status=status.HTTP_202_ACCEPTED)
+        except jwt.ExpiredSignatureError as err:
+            return Response({'message': 'Link is expired', 'err': str(err)}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as err:
+            return Response({'message': 'Invalid Token', 'err': str(err)}, status=status.HTTP_409_CONFLICT)
