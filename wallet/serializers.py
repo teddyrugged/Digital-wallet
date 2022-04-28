@@ -1,12 +1,13 @@
 from rest_framework import serializers
 
-from .models import Wallet, Currency
+from authentication.models import Wallet, Currency
 
 
 class WalletSerializers(serializers.ModelSerializer):
     class Meta:
         model = Wallet
-        exclude = ('username_id',)
+        fields = ['id', 'name', 'currency_id', 'amount']
+        # exclude = ('username_id',)
 
     def create(self, validated_data):
         validated_data['username_id'] = self.context['username_id']
@@ -16,10 +17,10 @@ class WalletSerializers(serializers.ModelSerializer):
 class FundWalletSerializers(serializers.ModelSerializer):
     class Meta:
         model = Wallet
-        fields = ['amount', 'currency_id']
+        fields = ['id', 'amount', 'currency_id']
 
 
 class WithdrawWalletSerializers(serializers.ModelSerializer):
     class Meta:
         model = Wallet
-        fields = ['amount', 'currency_id']
+        fields = ['id', 'amount', 'currency_id']
