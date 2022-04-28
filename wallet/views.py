@@ -6,7 +6,7 @@ from rest_framework import generics, permissions, response, status
 from . import serializers
 from authentication.models import User, Currency, Wallet
 from authentication.utils import Utils
-from . import my_permissions
+from . import permissions as P
 
 
 class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
@@ -77,7 +77,8 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [P.IsElite]
     queryset = Wallet.objects.all()
     serializer_class = serializers.FundWalletSerializers
 
@@ -143,16 +144,12 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
                     return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class WalletApiView(generics.ListCreateAPIView):
-    permission_classes = [my_permissions.IsElite, permissions.IsAuthenticated]
+class CreateWalletApiView(generics.CreateAPIView):
+    permission_classes = [P.IsElite, permissions.IsAuthenticated]
     serializer_class = serializers.WalletSerializers
     queryset = Wallet.objects.all()
 
     def get(self, request):
-        # return response.Response(request.COOKIES)
-        # serializer = serializers.WalletSerializers(self.get_queryset(), many=True) 
-        # return response.Response(serializer.data, status=status.HTTP_200_OK)
-
         # Get all wallets associated with the user
         user_wallet = Wallet.objects.filter(username_id=request.user)
 
@@ -168,4 +165,19 @@ class WalletApiView(generics.ListCreateAPIView):
             return response.Response({
                 'message': 'Wallet Created',
                 'details': serializer.data}, status=status.HTTP_201_CREATED)
-        return response.Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return response.Response('serializer.errors', status=status.HTTP_400_BAD_REQUEST)
+
+
+class WalletApiView(generics.ListAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = serializers.WalletSerializers
+    queryset = Wallet.objects.all()
+
+    def get(self, request):
+        # Get all wallets associated with the user
+        user_wallet = Wallet.objects.filter(username_id=request.user)
+
+        # Convert the models to dictionary for each wallet
+        wallets = [model_to_dict(wallet) for wallet in user_wallet]
+        return response.Response(wallets, status=status.HTTP_200_OK)
+
