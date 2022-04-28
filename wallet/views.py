@@ -77,15 +77,17 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     permission_classes = [P.IsElite]
     queryset = Wallet.objects.all()
     serializer_class = serializers.FundWalletSerializers
 
     def get(self, request, pk):
-        obj = Wallet.objects.get(pk=pk)
-        serializer = serializers.FundWalletSerializers(obj)
-        return response.Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            obj = Wallet.objects.get(pk=pk)
+            serializer = serializers.FundWalletSerializers(obj)
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        except Wallet.DoesNotExist:
+            return response.Response({'error': 'Wallet does not exist!'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
@@ -180,4 +182,3 @@ class WalletApiView(generics.ListAPIView):
         # Convert the models to dictionary for each wallet
         wallets = [model_to_dict(wallet) for wallet in user_wallet]
         return response.Response(wallets, status=status.HTTP_200_OK)
-
