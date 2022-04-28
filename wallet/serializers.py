@@ -19,6 +19,17 @@ class FundWalletSerializers(serializers.ModelSerializer):
         model = Wallet
         fields = ['id', 'amount', 'currency_id']
 
+    def validate(self, attrs):
+        amount = attrs.get('amount', '')
+        user = self.context['details'][0]
+        wallet_owner = Wallet.objects.get(pk=self.context['details'][1]).username_id
+        
+        if not amount:
+            raise serializers.ValidationError('Amount should not be empty')
+        if user != wallet_owner:
+            raise serializers.ValidationError('You are not the owner of this Wallet!')
+        return super().validate(attrs)
+
 
 class WithdrawWalletSerializers(serializers.ModelSerializer):
     class Meta:

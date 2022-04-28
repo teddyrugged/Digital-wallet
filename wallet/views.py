@@ -91,8 +91,9 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
+        serializer.context['details'] = (request.user, kwargs['pk'])
         if serializer.is_valid():
-            amount = serializer.data['amount']
+            amount = round(serializer.data['amount'], 2)
             data = Wallet.objects.get(pk=kwargs['pk'])
             currency_id = data.currency_id_id
             selected_currency = serializer.data['currency_id']
@@ -144,6 +145,8 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
                 except Exception as er:
                     return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return response.Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateWalletApiView(generics.CreateAPIView):
