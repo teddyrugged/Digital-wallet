@@ -35,19 +35,17 @@ class LoginApiView(generics.GenericAPIView):
         username = request.data['username']
         password = request.data['password']
 
-        # user = authenticate(username=username, password=password)
-        # print('User is: ', user)
-        # if user:
-        #     serializer = self.serializer_class(user)
         try:
             user = User.objects.get(username=username)
-            login(request, user)
-            serializer = self.serializer_class(user)
-            resp = Response(serializer.data, status=status.HTTP_200_OK)
-            resp.set_cookie(key='jwt', value=serializer.data['token'], httponly=True)
-            return resp
+            if user.check_password(password):
+                login(request, user)
+                serializer = self.serializer_class(user)
+                resp = Response(serializer.data, status=status.HTTP_200_OK)
+                resp.set_cookie(key='jwt', value=serializer.data['token'], httponly=True)
+                return resp
+            return Response({'message', 'Incorrect Authentication Details'}, status=status.HTTP_406_NOT_ACCEPTABLE)
         except User.DoesNotExist:
-            return Response('Invalid User', status=status.HTTP_404_NOT_FOUND)
+            return Response({'message', 'Invalid User'}, status=status.HTTP_404_NOT_FOUND)
 
 
 class RegisterApiView(generics.GenericAPIView):
@@ -63,14 +61,14 @@ class RegisterApiView(generics.GenericAPIView):
             token = serializer.data['token']
 
             try:
-                # relative_url = reverse('verify-email')
-                # data = {
-                #     'subject': 'Registration Complete',
-                #     'body': f"This is a verification message. Click link to verify your email http://{get_current_site(request).domain}{relative_url}?token={token}",
-                #     'receiver': serializer.data['email']
-                # }
+                relative_url = reverse('verify-email')
+                data = {
+                    'subject': 'Registration Complete',
+                    'body': f"This is a verification message. Click link to verify your email http://{get_current_site(request).domain}{relative_url}?token={token}",
+                    'receiver': serializer.data['email']
+                }
 
-                # Utils.send_email(data)
+                Utils.send_email(data)
                 return Response({'message': 'Success', 'data': serializer.data}, status=status.HTTP_201_CREATED)
             except Exception as err:
                 return Response({'message': 'Error', 'data': str(err)}, status=status.HTTP_400_BAD_REQUEST)
