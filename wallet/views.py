@@ -21,10 +21,7 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
-        amount = None
-        data = None
-        currency_id = None
-        selected_currency = None
+        serializer.context['details'] = (request.user, kwargs['pk'])
 
         if serializer.is_valid():
             amount = serializer.data['amount']
@@ -32,14 +29,14 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
             currency_id = data.currency_id_id
             selected_currency = serializer.data['currency_id']
 
-        if selected_currency == currency_id:
-            data.amount -= amount
-            data.save()
-            return self.get(request, kwargs['pk'])
-        else:
-            _from = Currency.objects.get(pk=selected_currency).symbol
-            _to = Currency.objects.get(pk=currency_id).symbol
-            url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
+            if selected_currency == currency_id:
+                data.amount -= amount
+                data.save()
+                return self.get(request, kwargs['pk'])
+            else:
+                _from = Currency.objects.get(pk=selected_currency).symbol
+                _to = Currency.objects.get(pk=currency_id).symbol
+                url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
 
             try:
                 if request.user.is_noob:
@@ -74,6 +71,7 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
             except Exception as er:
                 return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)
+        return response.Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
