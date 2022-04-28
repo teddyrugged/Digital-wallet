@@ -119,7 +119,7 @@ class UpdateCurrenciesApiView(generics.GenericAPIView):
             return Response({'message': "Connection Error. -> Invalid URL"}, status=status.HTTP_404_NOT_FOUND)
 
 
-class ResetPasswordAPIView(GenericAPIView):
+class ResetPasswordAPIView(generics.GenericAPIView):
     serializer_class = MyResetPasswordSerializer
     authentication_classes = []
 
@@ -138,8 +138,8 @@ class ChangePasswordApiView(generics.GenericAPIView):
     def get(self, request):
         token = request.GET.get('token')
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
-            user = User.objects.get(username=payload['username'])
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS512')
+            user = User.objects.get(username=payload['user'])
 
             return Response({'message': 'Token is Valid. Enter OTP to reset your password', 'user': user.username}, status=200)
         except jwt.ExpiredSignatureError as err:
@@ -154,8 +154,8 @@ class ChangePasswordApiView(generics.GenericAPIView):
             otp = int(request.data['otp'])
             token = request.GET.get('token')
 
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
-            user = User.objects.get(username=payload['username'])
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS512')
+            user = User.objects.get(username=payload['user'])
 
             if user.otp == otp:
                 return Response({'message': 'OTP Accepted', 'link': settings.BASE_URL + reverse('reset-change-password') + f'?token={token}'}, status=status.HTTP_202_ACCEPTED)
@@ -179,8 +179,8 @@ class SetNewPassword(generics.GenericAPIView):
         token = request.data['token']
         password = request.data['password']
         try:
-            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS256')
-            user = User.objects.get(username=payload['username'])
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms='HS512')
+            user = User.objects.get(username=payload['user'])
 
             user.set_password(password)
             user.save()

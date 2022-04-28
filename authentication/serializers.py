@@ -77,10 +77,9 @@ class MyResetPasswordSerializer(serializers.Serializer):
 
                 Utils.send_email(data)
 
-
         except Exception as err:
             print('WAHALA', err)
-            raise Exception
+            raise Exception(str(err))
         return super().validate(attrs)
 
 

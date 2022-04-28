@@ -163,6 +163,11 @@ EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 
 AUTH_USER_MODEL = 'authentication.User'
 
+if DEBUG:
+    BASE_URL = "http://localhost:5000"
+else:
+    BASE_URL = 'https://week9-team-a.herokuapp.com'
+
 import django_on_heroku
 
 django_on_heroku.settings(locals())
