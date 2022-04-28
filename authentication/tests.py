@@ -13,6 +13,7 @@ class RegisterTests(TestCase):
     def test_register_url_page(self):
         response = self.client.get('/api/v1/register/')   
         no_response = self.client.get('/posti/100000/')   
+
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED) 
         self.assertEqual(no_response.status_code, status.HTTP_404_NOT_FOUND) 
         
@@ -45,10 +46,4 @@ class LogInTest(TestCase):
         response= self.client.post('/api/v1/login/', {})
         self.assertEqual(response.status_code, status.HTTP_406_NOT_ACCEPTABLE)
 
-    
-
-
-
-
-
-
+   
