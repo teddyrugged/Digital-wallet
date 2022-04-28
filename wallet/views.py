@@ -153,7 +153,7 @@ class WalletApiView(generics.ListCreateAPIView):
         # return response.Response(request.COOKIES)
         # serializer = serializers.WalletSerializers(self.get_queryset(), many=True) 
         # return response.Response(serializer.data, status=status.HTTP_200_OK)
-      
+
         # Get all wallets associated with the user
         user_wallet = Wallet.objects.filter(username_id=request.user)
 
