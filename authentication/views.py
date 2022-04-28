@@ -1,5 +1,4 @@
 import json
-
 from django.conf import settings
 from django.contrib.auth import logout, login
 from django.contrib.sites.shortcuts import get_current_site
@@ -8,7 +7,6 @@ import jwt
 import requests
 from rest_framework import generics, status, exceptions
 from rest_framework.response import Response
-
 from authentication.serializers import RegisterSerializer, LoginSerializer, ValidateOTPSerializer, MyResetPasswordSerializer, SetNewPasswordSerializer
 from authentication.models import User, Currency
 from .utils import Utils
