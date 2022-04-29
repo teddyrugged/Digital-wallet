@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.urls import reverse
 from django.contrib.auth import get_user_model 
 from .models import User, Wallet
 from rest_framework import status
@@ -7,7 +8,7 @@ from rest_framework import status
 class RegisterTests(TestCase):
     
     def setUp(self):
-        self.credentials = {'username':'testuser','email':'test@email.com','password':'secret124'}
+        self.credentials = {'username':'testuser','email':'test@email.com', 'first_name': 'Jimmy', 'last_name': 'Kane', 'password':'secret124'}
         self.user = User.objects.create_user(**self.credentials)
         
     def test_register_url_page(self):
@@ -16,6 +17,20 @@ class RegisterTests(TestCase):
 
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED) 
         self.assertEqual(no_response.status_code, status.HTTP_404_NOT_FOUND) 
+    
+    def test_user_values(self):
+        self.assertEqual(f'{self.user.username}', 'testuser') 
+        self.assertEqual(f'{self.user.email}', 'test@email.com') 
+        self.assertEqual(f'{self.user.first_name}', 'Jimmy')
+        self.assertEqual(f'{self.user.last_name}', 'Kane') 
+    
+    # def test_create_user(self):
+    #     response = self.client.post(reverse('register'), {
+    #         'username':'testuser2',
+    #         'password':'secret124'})
+    #     self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    #     self.assertContains(response, 'testuser2')
+    #     self.assertContains(response, 'secret124')    
         
         
         
