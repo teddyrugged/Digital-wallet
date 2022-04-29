@@ -35,8 +35,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         cur_instance = new_user.main_currency
 
-        Wallet.objects.create(username_id=new_user, currency_id=cur_instance,
-                              name=f'{new_user.first_name} {cur_instance.name} Wallet').save()
+        Wallet.objects.create(username_id=new_user, currency_id=cur_instance,name=f'{new_user.first_name} {cur_instance.name} Wallet').save()
         return new_user
 
 
