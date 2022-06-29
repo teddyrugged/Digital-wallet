@@ -21,10 +21,7 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
-        amount = None
-        data = None
-        currency_id = None
-        selected_currency = None
+        serializer.context['details'] = (request.user, kwargs['pk'])
 
         if serializer.is_valid():
             amount = serializer.data['amount']
@@ -32,14 +29,14 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
             currency_id = data.currency_id_id
             selected_currency = serializer.data['currency_id']
 
-        if selected_currency == currency_id:
-            data.amount -= amount
-            data.save()
-            return self.get(request, kwargs['pk'])
-        else:
-            _from = Currency.objects.get(pk=selected_currency).symbol
-            _to = Currency.objects.get(pk=currency_id).symbol
-            url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
+            if selected_currency == currency_id:
+                data.amount -= amount
+                data.save()
+                return self.get(request, kwargs['pk'])
+            else:
+                _from = Currency.objects.get(pk=selected_currency).symbol
+                _to = Currency.objects.get(pk=currency_id).symbol
+                url = f'{settings.DATA_URL}latest?access_key={settings.DATA_API}'
 
             try:
                 if request.user.is_noob:
@@ -74,23 +71,27 @@ class WithdrawWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
             except Exception as er:
                 return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)
+        return response.Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     permission_classes = [P.IsElite]
     queryset = Wallet.objects.all()
     serializer_class = serializers.FundWalletSerializers
 
     def get(self, request, pk):
-        obj = Wallet.objects.get(pk=pk)
-        serializer = serializers.FundWalletSerializers(obj)
-        return response.Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            obj = Wallet.objects.get(pk=pk)
+            serializer = serializers.FundWalletSerializers(obj)
+            return response.Response(serializer.data, status=status.HTTP_200_OK)
+        except Wallet.DoesNotExist:
+            return response.Response({'error': 'Wallet does not exist!'}, status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data)
+        serializer.context['details'] = (request.user, kwargs['pk'])
         if serializer.is_valid():
-            amount = serializer.data['amount']
+            amount = round(serializer.data['amount'], 2)
             data = Wallet.objects.get(pk=kwargs['pk'])
             currency_id = data.currency_id_id
             selected_currency = serializer.data['currency_id']
@@ -142,6 +143,8 @@ class FundWalletApiView(generics.RetrieveUpdateDestroyAPIView):
 
                 except Exception as er:
                     return response.Response({'error': er}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return response.Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CreateWalletApiView(generics.CreateAPIView):
@@ -180,4 +183,3 @@ class WalletApiView(generics.ListAPIView):
         # Convert the models to dictionary for each wallet
         wallets = [model_to_dict(wallet) for wallet in user_wallet]
         return response.Response(wallets, status=status.HTTP_200_OK)
-
